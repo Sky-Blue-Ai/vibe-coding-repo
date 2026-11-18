@@ -1,0 +1,6 @@
+[
+  {"id":"m1","icon":"✳","title":"M1 · 认识 Vibe Coding","summary":"什么是 Vibe Coding、适合做什么、与传统开发的区别。","points":["自然语言变成代码","你负责目标、拆解与验收","AI 负责速度和执行力"],"output":"一句话向别人介绍 Vibe Coding"},
+  {"id":"m2","icon":"○","title":"M2 · 从想法到需求：先决定做什么","summary":"好的产品不是功能多，而是先想清楚\"解决谁的什么问题\"。","points":["用户是谁？","什么场景下用？","不做会怎样？","MVP 只保留哪 3 个功能？"],"output":"一页纸 PRD"},
+  {"id":"m3","icon":"🤖","title":"M3 · 认识 AI IDE 与编程 Agent","summary":"Claude Code、Cursor、Codex、Cline 等工具的定位与选择。","points":["工具对比表","什么时候用哪个"],"output":"选定主力工具"},
+  {"id":"m4","icon":"✎","title":"M4 · Prompt、上下文与任务拆解","summary":"怎么写清需求、怎么给参考、怎么把大任务拆小。","points":["Prompt 公式","拆解示例"],"output":"自己的 Prompt 模板"}
+]

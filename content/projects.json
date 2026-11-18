@@ -1,0 +1,6 @@
+[
+  {"no":"01","color":"#2b6ef7","title":"单页小游戏 / 交互小工具","desc":"最经典的第一个项目：规则明确、纯前端、当天可完成。重点练习\"描述清楚 → 生成 → 调整\"的循环。","chips":["单文件","HTML/CSS/JS","1 天"],"grad":"linear-gradient(135deg,#e8ecff,#f6f0ff)","prep":["选一个你真的想玩的小游戏或小工具","写 3 句话需求（是什么 / 怎么玩 / 怎么算赢）","让 AI 生成第一版，玩 5 分钟列出 3 个要改的点","逐条修改，直到自己满意"]},
+  {"no":"02","color":"#e07a5f","title":"个人工作台 / 运动效率工具","desc":"一个真正\"自己每天会用\"的小工具：记任务、记账、记录习惯。第一次接入数据存储。","chips":["产品应用","全栈","2-3 天"],"grad":"linear-gradient(135deg,#ffeadf,#fff6ec)","prep":[]},
+  {"no":"03","color":"#7a5fe0","title":"AI 管理家 SaaS","desc":"接入 AI API 的多用户产品：登录、调用额度、生成结果保存。第一次做\"真正的 SaaS\"。","chips":["LLM API","Supabase","Auth","额度"],"grad":"linear-gradient(135deg,#ece9ff,#f3f0ff)","prep":[]},
+  {"no":"04","color":"#5fb87a","title":"旅行规划 Agent","desc":"多步 AI Agent：输入目的地与偏好，Agent 自动查信息、做规划、输出完整行程。","chips":["Agent","联网搜索","多步 API"],"grad":"linear-gradient(135deg,#e2f6ea,#f0faf4)","prep":[]}
+]
