@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBE LAB · Vibe Coding 实验室工作流</title>
+<style>
+:root{
+  --bg:#f5f4f0; --card:#ffffff; --ink:#1a1a18; --muted:#8a877e;
+  --border:#e8e6df; --accent:#2b2b28; --lime:#d6f24b; --blue:#4f6ef7;
+  --r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.layout{display:flex;min-height:100vh}
+/* ---------- Sidebar ---------- */
+.sidebar{width:230px;background:var(--card);border-right:1px solid var(--border);padding:24px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.logo-badge{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+.logo b{font-size:15px;letter-spacing:1px}
+.logo small{display:block;font-size:9px;color:var(--muted);letter-spacing:2px}
+.tagline{font-size:10px;color:var(--muted);letter-spacing:2px;margin:4px 0 20px 2px}
+.nav-group{margin-bottom:16px}
+.nav-group h4{font-size:10px;color:var(--muted);letter-spacing:2px;margin:0 0 6px 10px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;font-size:13px;color:#555;margin-bottom:2px;cursor:pointer}
+.nav-item:hover{background:#f4f3ee}
+.nav-item.active{background:var(--accent);color:#fff}
+.nav-item .num{font-size:10px;color:inherit;opacity:.55;width:18px}
+.sidebar-note{margin-top:20px;background:var(--lime);border-radius:12px;padding:12px;font-size:11px;line-height:1.7}
+.sidebar-note b{display:block;margin-bottom:4px}
+/* ---------- Topbar & main ---------- */
+.main{flex:1;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(245,244,240,.9);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--card);border-radius:999px;padding:6px 14px;font-size:12px;color:#666}
+.progress{width:90px;height:6px;background:#eceae3;border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+.content{padding:36px 40px 80px;max-width:960px}
+.section{display:none}
+.section.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kicker{font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:10px}
+h1{font-size:34px;line-height:1.25;margin-bottom:14px}
+h2{font-size:24px;margin-bottom:8px}
+h3{font-size:15px;margin-bottom:6px}
+.lead{color:#666;max-width:640px;margin-bottom:28px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card p{color:#666;font-size:13px}
+.chip{display:inline-block;font-size:11px;border:1px solid var(--border);border-radius:999px;padding:2px 10px;color:#666;margin:2px 4px 0 0}
+.num-badge{font-size:11px;font-weight:700;color:var(--blue)}
+/* hero */
+.hero{background:linear-gradient(120deg,#eef1ff 0%,#fdfdfb 55%,#f2fbdc 100%);border-radius:20px;padding:40px 36px;margin-bottom:24px;border:1px solid var(--border)}
+.hero .badge{display:inline-block;background:var(--accent);color:#fff;border-radius:999px;font-size:11px;padding:4px 14px;margin-bottom:16px}
+.hero-stats{display:flex;gap:32px;margin-top:24px}
+.hero-stats b{font-size:22px;display:block}
+.hero-stats span{font-size:11px;color:var(--muted)}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.flow .card h3{font-size:14px}
+/* workflow phases */
+.phase{margin-bottom:22px}
+.phase-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.phase-head .dot{width:10px;height:10px;border-radius:50%}
+.phase-head b{font-size:13px;letter-spacing:1px}
+.phase-head span{font-size:11px;color:var(--muted)}
+.step{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:8px}
+.step .no{font-weight:800;font-size:14px;color:var(--ink);width:26px}
+.step .t{flex:1}
+.step .d{color:var(--muted);font-size:12px}
+/* checklist */
+.check{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:8px;cursor:pointer}
+.check .box{width:18px;height:18px;border:1.5px solid #c9c6bc;border-radius:6px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent}
+.check.done .box{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.check.done .t{color:var(--muted);text-decoration:line-through}
+/* prompt cards */
+.prompt{background:#232320;color:#e8e6df;border-radius:14px;padding:16px;font-size:12px;line-height:1.7;font-family:ui-monospace,Menlo,monospace;white-space:pre-wrap;margin-top:10px}
+/* dict */
+.dict-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dict-grid .card{padding:14px}
+.dict-grid b{font-size:13px}
+.dict-grid p{font-size:12px;color:var(--muted)}
+.next{margin-top:24px;text-align:right}
+.next button, .btn{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-size:13px;cursor:pointer}
+.btn.light{background:var(--card);color:var(--ink);border:1px solid var(--border)}
+@media(max-width:900px){.sidebar{display:none}.g2,.g3,.flow,.dict-grid{grid-template-columns:1fr}.content{padding:24px 16px}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="logo"><div class="logo-badge">V</div><div><b>VIBE LAB</b><small>BUILD · TEST · SHIP</small></div></div>
+    <div class="tagline">INTERACTIVE LEARNING MAP</div>
+    <nav id="nav">
+      <div class="nav-group"><h4>START HERE</h4>
+        <a class="nav-item" data-s="map" data-p="10"><span class="num">01</span>学习地图</a>
+        <a class="nav-item" data-s="route" data-p="15"><span class="num">02</span>选择学习路线</a>
+        <a class="nav-item" data-s="flowmap" data-p="10"><span class="num">03</span>完整学习地图</a>
+      </div>
+      <div class="nav-group"><h4>LEARN BY DOING</h4>
+        <a class="nav-item" data-s="knowledge" data-p="10"><span class="num">04</span>核心知识模块</a>
+        <a class="nav-item" data-s="workflow" data-p="20"><span class="num">05</span>标准开发工作流</a>
+        <a class="nav-item" data-s="projects" data-p="15"><span class="num">06</span>项目实战</a>
+        <a class="nav-item" data-s="stack" data-p="10"><span class="num">07</span>工具与技术栈</a>
+      </div>
+      <div class="nav-group"><h4>REFERENCE</h4>
+        <a class="nav-item" data-s="prompts" data-p="10"><span class="num">08</span>Prompt 模板库</a>
+        <a class="nav-item" data-s="troubleshoot" data-p="5"><span class="num">09</span>常见问题排查</a>
+        <a class="nav-item" data-s="dict" data-p="5"><span class="num">10</span>技术词典</a>
+        <a class="nav-item" data-s="checklist" data-p="5"><span class="num">11</span>交付检查清单</a>
+      </div>
+    </nav>
+    <div class="sidebar-note"><b>别只收藏，动手做一个。</b>每一个模块，试着把里面的方法用在你自己的项目里，才是真的学会。</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar">
+      <span class="pill">◈ INTERACTIVE LEARNING MAP</span>
+      <span class="pill">学习进度 <span class="progress"><i id="pbar"></i></span> <b id="ptxt">0%</b></span>
+    </div>
+    <div class="content">
+
+      <!-- 01 学习地图 / Hero -->
+      <section class="section active" id="s-map">
+        <div class="hero">
+          <span class="badge">A PRACTICAL PLAYBOOK · 2026</span>
+          <h1>从一句想法，<br>到一个<span style="background:var(--lime);padding:0 8px">能上线的产品</span></h1>
+          <p class="lead" style="margin-bottom:0">Vibe Coding 不是让其"帮你写代码"，而是要你学会提需求、拆得上下文、拆解任务、验收结果，最后形成一个真正能用的产品交付给用户使用。</p>
+          <div class="hero-stats">
+            <div><b>11</b><span>学习章节</span></div>
+            <div><b>5</b><span>常用 AI 编程工具</span></div>
+            <div><b>0 → 1</b><span>从想法到上线</span></div>
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--lime)">
+          <h3>💡 先建立正确理解</h3>
+          <p>AI 智能编程不等于"不用学技术"。它的核心是：你提供清晰目标、拆解任务、验收结果；AI 提供速度和执行力。先把工作流跑顺，再谈效率。</p>
+        </div>
+        <h2 style="margin:32px 0 6px">先选一条适合自己的路线</h2>
+        <p class="lead">三条路线对应三种人：想快速做出产品的人、想系统掌握的人、已经有技术基础想提效的人。</p>
+        <div class="grid g3">
+          <div class="card"><h3>🚀 产品/project 优先</h3><p>直接做一个真实的小项目，边做边学，遇到什么补什么。</p><span class="chip">适合：想快速出成果</span></div>
+          <div class="card"><h3>📚 知识体系优先</h3><p>先看核心知识模块，建立概念框架，再进入项目实战。</p><span class="chip">适合：想系统掌握</span></div>
+          <div class="card"><h3>⚡ 提效优先</h3><p>已有技术基础，重点看工作流、Prompt 模板和工具链。</p><span class="chip">适合：开发者提效</span></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('route')">开始 → 选择学习路线</button></div>
+      </section>
+
+      <!-- 02 选择学习路线 -->
+      <section class="section" id="s-route">
+        <p class="kicker">02 / CHOOSE YOUR ROUTE</p>
+        <h1>选择学习路线</h1>
+        <p class="lead">不同目标对应不同路径。选一条主线走完，再回头补其他模块。</p>
+        <div class="grid g2">
+          <div class="card"><h3>路线 A · 做出第一个产品（4 周）</h3><p>01 学习地图 → 04 核心知识（只看 M1/M2）→ 05 工作流 → 06 项目实战（项目 1）→ 11 交付清单</p><span class="chip">每周 3-5 小时</span></div>
+          <div class="card"><h3>路线 B · 系统掌握 Vibe Coding（8 周）</h3><p>全部模块按顺序学习，每学完一个模块做一次小练习。</p><span class="chip">每周 5-8 小时</span></div>
+          <div class="card"><h3>路线 C · 开发者提效（2 周）</h3><p>05 工作流 → 08 Prompt 模板库 → 09 问题排查 → 07 工具链</p><span class="chip">每周 2-3 小时</span></div>
+          <div class="card"><h3>路线 D · 做 AI 产品 / Agent（6 周）</h3><p>04 核心知识（M3/M4）→ 06 项目实战（项目 4）→ 07 工具链</p><span class="chip">需要一定基础</span></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('flowmap')">查看完整学习地图 →</button></div>
+      </section>
+
+      <!-- 03 完整学习地图 -->
+      <section class="section" id="s-flowmap">
+        <p class="kicker">03 / THE LEARNING MAP</p>
+        <h1>一张图看懂完整学习路径</h1>
+        <p class="lead">从认识 Vibe Coding，到第一阶段做出第一个可用的产品。不只是看内容，更要动手。</p>
+        <div class="grid g2" id="stages">
+          <div class="card"><span class="num-badge">STAGE 01</span><h3>认识 Vibe Coding</h3><p>什么是 Vibe Coding、适用场景、与传统开发的区别。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge" style="color:#e07a5f">STAGE 02</span><h3>发现问题与定义需求</h3><p>从真实痛点出发，把模糊想法变成清晰需求。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge" style="color:#7a5fe0">STAGE 03</span><h3>熟悉 AI 编程工具</h3><p>Claude Code、Cursor、Codex 等工具的选择与上手。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge" style="color:#e0a35f">STAGE 04</span><h3>设计与生成前端</h3><p>设计参考、页面结构、生成前端页面并逐步调整。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge">STAGE 05</span><h3>接入 AI 能力</h3><p>调用 AI API，让产品真正"智能"起来。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge" style="color:#5fb87a">STAGE 06</span><h3>补齐后端与数据</h3><p>数据库、登录、存储，让数据能保存下来。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge" style="color:#e05f8a">STAGE 07</span><h3>测试、调试与安全</h3><p>跑通流程、修 bug、检查权限与数据安全。</p><span class="chip">进入学习 →</span></div>
+          <div class="card"><span class="num-badge" style="color:#5fb8d6">STAGE 08</span><h3>部署与迭代维护</h3><p>上线、自定义域名、收集反馈、持续迭代。</p><span class="chip">进入学习 →</span></div>
+        </div>
+        <h2 style="margin:36px 0 6px">核心知识模块</h2>
+        <p class="lead">11 个模块按推荐顺序排列，每学完一个卡片，可以接着学习下一个。也可以随时用搜索跳到需要的模块。</p>
+        <div class="grid g2">
+          <div class="card"><h3>✳ M1 · 认识 Vibe Coding</h3><p>什么是 Vibe Coding、适合做什么、与传统开发的区别、为什么现在值得学。</p><span class="chip">产出：一句话说清 Vibe Coding</span></div>
+          <div class="card"><h3>○ M2 · 从想法到需求：先决定做什么</h3><p>找痛点、定义最小可用版本（MVP）、判断这个想法值不值得做。</p><span class="chip">产出：1 页需求描述 PRD</span></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('knowledge')">进入核心知识模块 →</button></div>
+      </section>
+
+      <!-- 04 核心知识模块 -->
+      <section class="section" id="s-knowledge">
+        <p class="kicker">04 / CORE KNOWLEDGE</p>
+        <h1>核心知识模块</h1>
+        <p class="lead">按推荐顺序排列。每学完一个卡片，可以接着学习下一个，也可以随时跳到需要的模块。</p>
+        <div class="grid g2">
+          <div class="card"><h3>✳ M1 · 认识 Vibe Coding</h3>
+            <p>什么是 Vibe Coding、适合做什么、与传统开发的区别。</p>
+            <h3 style="margin-top:12px;font-size:13px">关键概念速览</h3>
+            <p>· 自然语言变成代码<br>· 你负责目标、拆解与验收<br>· AI 负责速度和执行力</p>
+            <span class="chip">产出：一句话向别人介绍 Vibe Coding</span></div>
+          <div class="card"><h3>○ M2 · 从想法到需求：先决定做什么</h3>
+            <p>好的产品不是功能多，而是先想清楚"解决谁的什么问题"。</p>
+            <h3 style="margin-top:12px;font-size:13px">最小可行思考</h3>
+            <p>· 用户是谁？<br>· 什么场景下用？<br>· 不做会怎样？<br>· MVP 只保留哪 3 个功能？</p>
+            <span class="chip">产出：一页纸 PRD</span></div>
+          <div class="card"><h3>🤖 M3 · 认识 AI IDE 与编程 Agent</h3>
+            <p>Claude Code、Cursor、Codex、Cline 等工具的定位与选择，什么时候用哪个。</p><span class="chip">工具对比表 · 上手指南</span></div>
+          <div class="card"><h3>✎ M4 · Prompt、上下文与任务拆解</h3>
+            <p>怎么写清需求、怎么给参考、怎么把大任务拆成 AI 能稳定完成的小任务。</p><span class="chip">Prompt 公式 · 拆解示例</span></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('workflow')">进入标准开发工作流 →</button></div>
+      </section>
+
+      <!-- 05 标准开发工作流 -->
+      <section class="section" id="s-workflow">
+        <p class="kicker">05 / THE BUILD LOOP</p>
+        <h1>真正好用的 Vibe Coding 工作流</h1>
+        <p class="lead">不是"一句话让 AI 帮我写代码"，而是有节奏、有阶段、有反馈的小闭环。每一步都让下一个环节更轻松，循环推进。这是一个<b>可复用的流程（Repeatable Process）</b>。</p>
+        <div class="flow">
+          <div class="card"><h3>定义问题</h3><p>清晰、具体、可验收</p></div>
+          <div class="card"><h3>写需求档</h3><p>功能描述 · 数据结构 · 交互逻辑</p></div>
+          <div class="card"><h3>拆分任务</h3><p>小步提交 · 每步可回退</p></div>
+          <div class="card"><h3>生成页面</h3><p>先做所有页面，逐步调整</p></div>
+          <div class="card"><h3>迭代细化</h3><p>测一遍 · 改一遍 · 再测一遍</p></div>
+          <div class="card"><h3>交付上线</h3><p>部署 · 域名 · 收集反馈</p></div>
+        </div>
+        <div class="grid g2" style="margin-bottom:28px">
+          <div class="card" style="border-left:4px solid var(--blue)">
+            <h3>一次没生产出有需求才交给 AI</h3>
+            <p>不要一开始就"给我做个 App"。先写清楚：用户是谁、做什么、页面有哪些、数据存哪里。需求描述越清楚，生成越稳定。改需求时也一样：一次只改一件事，改完测一遍再继续。</p>
+          </div>
+          <div class="card" style="border-left:4px solid var(--lime)">
+            <h3>先做最重要的核心闭环</h3>
+            <p>先用最短路径让产品"能用"：一个页面能提交、能看到结果。再补登录、再补美化。不要一上来就做权限、做支付——先把核心闭环跑通，再一轮一轮往外扩。</p>
+          </div>
+        </div>
+
+        <h2 style="margin-bottom:4px">Vibe Coding 完整工作流</h2>
+        <p class="lead">10 步 · 从想法到上线。</p>
+
+        <div class="phase"><div class="phase-head"><span class="dot" style="background:#7a5fe0"></span><b>PHASE 01 · 准备</b><span>2 步</span></div>
+          <div class="step"><span class="no">00</span><div class="t"><b>建仓</b></div><div class="d">Github 建仓库，每步 commit 可回退</div></div>
+          <div class="step"><span class="no">01</span><div class="t"><b>写 PRD</b></div><div class="d">功能描述 · 数据结构 · 交互逻辑</div></div>
+        </div>
+        <div class="phase"><div class="phase-head"><span class="dot" style="background:#4f8ff7"></span><b>PHASE 02 · 视觉</b><span>2 步</span></div>
+          <div class="step"><span class="no">02</span><div class="t"><b>UI 视觉确认</b></div><div class="d">找参考 → demo → 选风格 → 设计规范</div></div>
+          <div class="step"><span class="no">03</span><div class="t"><b>做页面前端</b></div><div class="d">先做出所有页面，逐页调整</div></div>
+        </div>
+        <div class="phase"><div class="phase-head"><span class="dot" style="background:#e08a5f"></span><b>PHASE 03 · 开发</b><span>2 步</span></div>
+          <div class="step"><span class="no">04</span><div class="t"><b>拆分 Issues</b></div><div class="d">拆细切片 · 拆界面 · 标注依赖</div></div>
+          <div class="step"><span class="no">05</span><div class="t"><b>正式开发</b></div><div class="d">按 Issue 逐个开发</div></div>
+        </div>
+        <div class="phase"><div class="phase-head"><span class="dot" style="background:#5fb87a"></span><b>PHASE 04 · 交付</b><span>4 步</span></div>
+          <div class="step"><span class="no">06</span><div class="t"><b>全功能验收测试</b></div><div class="d">业务流走查</div></div>
+          <div class="step"><span class="no">07</span><div class="t"><b>UI 细节打磨</b></div><div class="d">组件 · 对齐间距 · 一致性</div></div>
+          <div class="step"><span class="no">08</span><div class="t"><b>上线</b></div><div class="d">Vercel · 自定义域名 · 生产数据库</div></div>
+          <div class="step"><span class="no">09</span><div class="t"><b>迭代维护</b></div><div class="d">新需求记录，重新走流程</div></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('projects')">进入项目实战 →</button></div>
+      </section>
+
+      <!-- 06 项目实战 -->
+      <section class="section" id="s-projects">
+        <p class="kicker">06 / PROJECT STUDIO</p>
+        <h1>项目实战：从小作品到完整产品</h1>
+        <p class="lead">1 个 Hands-on Project。按顺序做，每完成一个项目，你的工作流就更熟练一次。</p>
+        <div class="grid g2">
+          <div class="card"><span class="num-badge">PROJECT 01</span>
+            <div style="height:90px;border-radius:12px;background:linear-gradient(135deg,#e8ecff,#f6f0ff);margin:10px 0"></div>
+            <h3>单页小游戏 / 交互小工具</h3>
+            <p>最经典的第一个项目：规则明确、纯前端、当天可完成。重点练习"描述清楚 → 生成 → 调整"的循环。</p>
+            <span class="chip">单文件</span><span class="chip">HTML/CSS/JS</span><span class="chip">1 天</span>
+            <p style="margin-top:10px"><b>要做的准备：</b></p>
+            <p>· 选一个你真的想玩的小游戏或小工具<br>· 写 3 句话需求（是什么 / 怎么玩 / 怎么算赢）<br>· 让 AI 生成第一版，玩 5 分钟列出 3 个要改的点<br>· 逐条修改，直到自己满意</p></div>
+          <div class="card"><span class="num-badge" style="color:#e07a5f">PROJECT 02</span>
+            <div style="height:90px;border-radius:12px;background:linear-gradient(135deg,#ffeadf,#fff6ec);margin:10px 0"></div>
+            <h3>个人工作台 / 运动效率工具</h3>
+            <p>一个真正"自己每天会用"的小工具：记任务、记账、记录习惯。第一次接入数据存储。</p>
+            <span class="chip">产品应用</span><span class="chip">全栈</span><span class="chip">2-3 天</span></div>
+          <div class="card"><span class="num-badge" style="color:#7a5fe0">PROJECT 03</span>
+            <div style="height:90px;border-radius:12px;background:linear-gradient(135deg,#ece9ff,#f3f0ff);margin:10px 0"></div>
+            <h3>AI 管理家 SaaS</h3>
+            <p>接入 AI API 的多用户产品：登录、调用额度、生成结果保存。第一次做"真正的 SaaS"。</p>
+            <span class="chip">LLM API</span><span class="chip">Supabase</span><span class="chip">Auth</span><span class="chip">额度</span></div>
+          <div class="card"><span class="num-badge" style="color:#5fb87a">PROJECT 04</span>
+            <div style="height:90px;border-radius:12px;background:linear-gradient(135deg,#e2f6ea,#f0faf4);margin:10px 0"></div>
+            <h3>旅行规划 Agent</h3>
+            <p>多步 AI Agent：输入目的地与偏好，Agent 自动查信息、做规划、输出完整行程。</p>
+            <span class="chip">Agent</span><span class="chip">联网搜索</span><span class="chip">多步 API</span></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('stack')">查看工具与技术栈 →</button></div>
+      </section>
+
+      <!-- 07 工具与技术栈 -->
+      <section class="section" id="s-stack">
+        <p class="kicker">07 / TOOLS & STACK</p>
+        <h1>工具与技术栈</h1>
+        <p class="lead">按项目阶段选工具，不追新、不堆栈。</p>
+        <div class="grid g2">
+          <div class="card"><h3>AI 编程工具</h3><p><b>Claude Code</b> · 终端 Agent，适合整套项目与重构<br><b>Cursor</b> · AI IDE，边写边改体验好<br><b>Codex / Cline</b> · 轻量替代，按需选择</p></div>
+          <div class="card"><h3>前端</h3><p>HTML / CSS / JavaScript 起步；组件化用 React + Tailwind；需要快速上线直接用 Vite。</p></div>
+          <div class="card"><h3>后端与数据</h3><p>Supabase（数据库 + 登录 + 存储，最适合个人项目）；复杂逻辑再上 Node/Python 服务。</p></div>
+          <div class="card"><h3>部署</h3><p>Vercel / Netlify 一键部署前端；自定义域名 + HTTPS；生产数据库单独管理。</p></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('prompts')">进入 Prompt 模板库 →</button></div>
+      </section>
+
+      <!-- 08 Prompt 模板库 -->
+      <section class="section" id="s-prompts">
+        <p class="kicker">08 / PROMPT LIBRARY</p>
+        <h1>可直接拿去用的 Prompt 模板</h1>
+        <p class="lead">复制、替换方括号里的内容，直接发给 AI。每个模板都标了使用时机。</p>
+        <div class="grid g2">
+          <div class="card"><span class="num-badge">01 / 先帮我做决策</span>
+            <div class="prompt">我想做一个【一句话描述产品】。请先不要写代码，帮我回答：1. 最小可用版本（MVP）应该包含哪 3 个功能？2. 哪些功能第一版不该做？3. 数据需要存哪些字段？用表格回答。</div></div>
+          <div class="card"><span class="num-badge" style="color:#e07a5f">02 / 生活方向守卫 PRD</span>
+            <div class="prompt">请根据以下描述，帮我整理一份一页纸 PRD，包含：产品一句话、目标用户、核心场景、功能清单（分 P0/P1）、页面结构、数据结构。产品描述：【粘贴你的想法】。</div></div>
+          <div class="card"><span class="num-badge" style="color:#7a5fe0">03 / 先想限制，不要动代码</span>
+            <div class="prompt">这是我现在的代码：【粘贴代码】。报错信息是：【粘贴报错】。请先只分析可能的原因（按概率排序），不要直接改代码。等我确认原因后再修复。</div></div>
+          <div class="card"><span class="num-badge" style="color:#e0a35f">04 / 改需求只改一件事</span>
+            <div class="prompt">请在现有项目上只做这一处修改：【描述改动】。不要动其他文件的逻辑。改完后告诉我：改了哪些文件、如何验证这次改动生效。</div></div>
+          <div class="card"><span class="num-badge" style="color:#5fb87a">05 / Debug：不允许你别猜</span>
+            <div class="prompt">程序出现【描述现象】。请给出 3 个最可能的原因和对应的验证方法（每条一个可执行的检查命令/步骤），我来逐条验证后再修复。</div></div>
+          <div class="card"><span class="num-badge" style="color:#e05f8a">06 / 上线前用户守备复查</span>
+            <div class="prompt">请以资深审查者身份检查这个项目：1. 安全问题（密钥泄露、权限漏洞）2. 明显 bug 3. 移动端适配 4. 性能隐患。按严重程度排序输出清单，先不要改代码。</div></div>
+        </div>
+        <h2 style="margin:36px 0 6px">常见问题排查手册</h2>
+        <p class="lead">遇到问题先对号入座，大多数问题都是这几类。</p>
+        <div class="grid g2">
+          <div class="card"><h3>界面没变化 / 改老</h3><p>改的是旧文件、没保存、或浏览器缓存 → 强刷（Ctrl+Shift+R），确认 AI 改的文件就是正在运行的文件。</p></div>
+          <div class="card"><h3>Module not found</h3><p>包没装或路径写错 → 看报错里的包名，npm install；检查 import 路径大小写。</p></div>
+          <div class="card"><h3>API 401 / 403</h3><p>密钥没配、配错环境、或没加到服务器端 → 检查 .env 与调用位置（密钥不能出现在前端）。</p></div>
+          <div class="card"><h3>改 A 坏 B（回归）</h3><p>改动面太大 → 回退到上一个 commit，把需求拆小，一次只改一件事。</p></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('checklist')">查看交付检查清单 →</button></div>
+      </section>
+
+      <!-- 09/10 词典 + 检查清单 -->
+      <section class="section" id="s-checklist">
+        <p class="kicker">09 / QUALITY GATE</p>
+        <h1>项目交付前，逐项打勾</h1>
+        <p class="lead">这套检查清单为了防止"看起来能用"的产品一路带病上线。每一项都是别人踩过的坑，勾完再交付。</p>
+        <div id="checks">
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>需求没跑偏</b><br>核心功能与 PRD 一致，没有偷偷加/漏功能。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>核心流程走得通</b><br>从打开 → 使用 → 拿到结果，全程无阻断。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>空状态/异常提示</b><br>没数据、网络失败、输错时有友好提示。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>手机能用</b><br>在手机浏览器打开核心页面检查布局。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>密钥不在前端</b><br>API key 只在服务端/环境变量，代码仓库里没有明文密钥。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>数据能保存</b><br>刷新/重启后用户数据还在。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>回退方案</b><br>git 有干净提交，出问题能回退到上一个版本。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>上线地址可访问</b><br>部署链接（Vercel 等）打开正常，HTTPS 生效。</div></div>
+          <div class="check" onclick="tog(this)"><span class="box">✓</span><div class="t"><b>找真实用户试过</b><br>至少 1 个目标用户完整用过一次，收集了反馈。</div></div>
+        </div>
+        <p style="margin-top:14px;color:var(--muted);font-size:12px">⚠️ 安全提示：不要在浏览器端保存 API key，也不要把生产数据库的管理员权限交给前端页面。</p>
+
+        <h2 style="margin:40px 0 6px">常用技术词典</h2>
+        <p class="lead">不用一次性背下来，用到时回来查就行——所有术语会在它们出现的位置再解释一遍。</p>
+        <div class="dict-grid">
+          <div class="card"><b>MVP</b><p>最小可行产品：能验证想法的最简版本。</p></div>
+          <div class="card"><b>PRD</b><p>产品需求文档：写清楚做什么、给谁用。</p></div>
+          <div class="card"><b>API</b><p>程序之间对话的接口，AI 能力靠它接入。</p></div>
+          <div class="card"><b>HTML</b><p>网页的骨架，决定页面上有什么。</p></div>
+          <div class="card"><b>CSS</b><p>网页的皮肤，决定长什么样。</p></div>
+          <div class="card"><b>JavaScript</b><p>网页的行为，让它动起来、能交互。</p></div>
+          <div class="card"><b>组件 Component</b><p>可复用的界面积木，如按钮、卡片。</p></div>
+          <div class="card"><b>State</b><p>页面当前的数据状态，变了界面就变。</p></div>
+          <div class="card"><b>Repo</b><p>代码仓库，项目的全部历史与版本。</p></div>
+        </div>
+        <div class="next"><button class="btn" onclick="go('map')">回到学习地图 ↑</button></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const sections=[...document.querySelectorAll('.section')];
+const navItems=[...document.querySelectorAll('.nav-item')];
+function go(id){
+  sections.forEach(s=>s.classList.toggle('active',s.id==='s-'+id));
+  navItems.forEach(n=>n.classList.toggle('active',n.dataset.s===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+  history.replaceState(null,'','#'+id);
+}
+navItems.forEach(n=>n.addEventListener('click',()=>go(n.dataset.s)));
+function tog(el){el.classList.toggle('done');updateProgress();}
+function updateProgress(){
+  const total=document.querySelectorAll('.check').length;
+  const done=document.querySelectorAll('.check.done').length;
+  const base=[...navItems].filter(n=>n.classList.contains('active')).reduce((a,n)=>a+ +n.dataset.p,0);
+  const pct=Math.min(100,base+Math.round(done/total*30));
+  document.getElementById('pbar').style.width=pct+'%';
+  document.getElementById('ptxt').textContent=pct+'%';
+}
+navItems[0].classList.add('active');
+const h=location.hash.slice(1); if(h&&document.getElementById('s-'+h)) go(h);
+</script>
+</body>
+</html>
